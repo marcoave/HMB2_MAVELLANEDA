@@ -38,7 +38,7 @@ public class AccountController {
         return new AccountDTO(accountRepository.findById(id).orElse(null));
     }
 
-    //----------
+    //------------
     @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)
     public ResponseEntity<String> createAccount(Authentication authentication) {
 
