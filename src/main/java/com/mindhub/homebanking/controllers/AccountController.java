@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -38,13 +39,26 @@ public class AccountController {
         return new AccountDTO(accountRepository.findById(id).orElse(null));
     }
 
+    @RequestMapping("/clients/current/accounts")
+    //public Account getAccount(Authentication authentication,@RequestParam String accountFromNumber){
+       public List<AccountDTO> getAccountDTO(Authentication authentication) {
+        Client clientDTO = clientRepository.findByEmail(authentication.getName());
+        //return clientDTO.getAccounts();
+        return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
+    //}
+
+        //return accountRepository.findByNumber(accountFromNumber);
+
+        //System.out.println(AccountDTO);
+    }
+
     //------------
     @RequestMapping(path = "/clients/current/accounts", method = RequestMethod.POST)
     public ResponseEntity<String> createAccount(Authentication authentication) {
 
-        /*if (authentication != null) {
+        if (authentication == null) {
             return new ResponseEntity<>("No va", HttpStatus.FORBIDDEN);
-        }*/
+        }
             Client clientDTO = clientRepository.findByEmail(authentication.getName());
 
             if (clientDTO.getAccounts().size() >= 3) {
@@ -79,6 +93,17 @@ public class AccountController {
             return (int) ((Math.random() * (max - min)) + min);
 
         }
+
+//-------
+    /*@RequestMapping("/clients/current/accounts")
+    public ResponseEntity<Object> showAccount(Authentication authentication) {
+
+        Client clientDTO = clientRepository.findByEmail(authentication.getName());
+
+        return new Set<AccountDTO>(clientDTO.getAccounts());
+
+        }*/
+
 
 
     }

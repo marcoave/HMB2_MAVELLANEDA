@@ -36,7 +36,7 @@ public class WebAuthentication extends GlobalAuthenticationConfigurerAdapter {
                             AuthorityUtils.createAuthorityList("ADMIN"));
                 } else {
                     return new User(client.getEmail(), client.getPassword(),
-                            AuthorityUtils.createAuthorityList("CLIENT"));
+                            AuthorityUtils.createAuthorityList("CLIENT"));//Se genera la cookie
                 }
             } else {
                 throw new UsernameNotFoundException("Usuario no encontrado");

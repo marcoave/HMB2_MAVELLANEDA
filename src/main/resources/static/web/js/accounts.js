@@ -9,6 +9,7 @@ Vue.createApp({
     },
     methods: {
         getData: function () {
+            //axios.get('/api/clients/current')
             axios.get("/api/clients/current")
                 .then((response) => {
                     //get client ifo
