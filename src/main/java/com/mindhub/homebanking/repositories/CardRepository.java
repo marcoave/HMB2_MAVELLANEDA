@@ -13,5 +13,6 @@ import java.util.Set;
 public interface CardRepository extends JpaRepository<Card,Long> {
 
    int countCardsByClientEmailAndType(String email, CardType cardType);
+   Card findByNumber (String number);
 
 }

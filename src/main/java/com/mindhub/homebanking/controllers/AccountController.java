@@ -43,8 +43,8 @@ public class AccountController {
     //public Account getAccount(Authentication authentication,@RequestParam String accountFromNumber){
        public List<AccountDTO> getAccountDTO(Authentication authentication) {
         Client clientDTO = clientRepository.findByEmail(authentication.getName());
-        //return clientDTO.getAccounts();
-        return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
+        return clientDTO.getAccounts().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
+        //return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
     //}
 
         //return accountRepository.findByNumber(accountFromNumber);
@@ -66,6 +66,13 @@ public class AccountController {
             }
             // Generar un número de cuenta aleatorio
             String accountNumber = generateAccountNumber();
+
+            //Verificar que no exista el numero de cuenta
+            if (accountRepository.findByNumber(accountNumber)!=null) {
+            return new ResponseEntity<>("Numero de cuenta existente", HttpStatus.FORBIDDEN);
+            }
+
+            //String accountNumber = newAccountNumber1();
 
             // Crear la nueva cuenta
             Account newAccount = new Account();
@@ -93,6 +100,8 @@ public class AccountController {
             return (int) ((Math.random() * (max - min)) + min);
 
         }
+
+
 
 //-------
     /*@RequestMapping("/clients/current/accounts")

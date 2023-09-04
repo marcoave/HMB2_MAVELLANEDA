@@ -55,9 +55,14 @@ public class CardController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ya tienes 3 tarjetas de este tipo.");
 
         }
-        // Generar un número de cuenta aleatorio
+        // Generar un número de tarjeta aleatorio
         Integer cvvNumber = generateCvvNumber();
         String chainNumber=generateChainNumber();
+
+        //Verificar que no exista el numero de tarjeta
+        if (cardRepository.findByNumber(chainNumber)!=null) {
+            return new ResponseEntity<>("Numero de tarjeta existente", HttpStatus.FORBIDDEN);
+        }
 
         //Crear tarjeta
 
