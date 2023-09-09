@@ -37,19 +37,17 @@ public class AccountController {
     @RequestMapping("/accounts/{id}")
     public AccountDTO getAccount(@PathVariable Long id) {
         return new AccountDTO(accountRepository.findById(id).orElse(null));
+        //return new AccountDTO(accountRepository.findById(id).orElse(null));
     }
 
     @RequestMapping("/clients/current/accounts")
-    //public Account getAccount(Authentication authentication,@RequestParam String accountFromNumber){
+
        public List<AccountDTO> getAccountDTO(Authentication authentication) {
         Client clientDTO = clientRepository.findByEmail(authentication.getName());
         return clientDTO.getAccounts().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
-        //return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
-    //}
 
-        //return accountRepository.findByNumber(accountFromNumber);
 
-        //System.out.println(AccountDTO);
+
     }
 
     //------------
@@ -104,15 +102,6 @@ public class AccountController {
 
 
 //-------
-    /*@RequestMapping("/clients/current/accounts")
-    public ResponseEntity<Object> showAccount(Authentication authentication) {
-
-        Client clientDTO = clientRepository.findByEmail(authentication.getName());
-
-        return new Set<AccountDTO>(clientDTO.getAccounts());
-
-        }*/
-
 
 
     }

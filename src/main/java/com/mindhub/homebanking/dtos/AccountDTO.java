@@ -13,12 +13,13 @@ public class AccountDTO {
     private LocalDate creationDate;
     private Set<TransactionDTO> transactions;
 
+    public AccountDTO(){}
     public AccountDTO(Account account){
-       id= account.getId();
-        number=account.getNumber();
-        balance=account.getBalance();
-        creationDate=account.getCreationDate();
-        transactions= account.getTransactions().stream().map(element -> new TransactionDTO(element)).collect(Collectors.toSet());
+       this.id= account.getId();
+        this.number=account.getNumber();
+        this.balance=account.getBalance();
+        this.creationDate=account.getCreationDate();
+        this.transactions= account.getTransactions().stream().map(element -> new TransactionDTO(element)).collect(Collectors.toSet());
 
     }
 

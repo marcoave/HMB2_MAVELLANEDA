@@ -22,6 +22,9 @@ public class Loan {
     private String name;
     private Double maxAmount;
 
+    //---
+    private Double amount;
+
 
     @ElementCollection
     private List<Integer> payments=new ArrayList<>();
@@ -34,20 +37,20 @@ public class Loan {
     public Loan() {
     }
 
-    public Loan(Long id, String name, Double maxAmount, List<Integer> payments) {
+    public Loan(Long id, String name, Double maxAmount,Double amount, List<Integer> payments) {
         this.id = id;
         this.name = name;
         this.maxAmount = maxAmount;
         this.payments = payments;
+        this.amount=amount;
     }
-
-   /* public Loan(Long id, String name, Double maxAmount, List<Integer> payments, List<ClientLoan> clientLoans) {
+    /*public Loan(Long id, String name, Double maxAmount, List<Integer> payments) {
         this.id = id;
         this.name = name;
         this.maxAmount = maxAmount;
         this.payments = payments;
-        this.clientLoans = clientLoans;
     }*/
+
     //Métodos
 //@JsonIgnore
     public Long getId() {
@@ -97,4 +100,12 @@ public class Loan {
     /*public Set<ClientLoan> getClientLoans() {
         return clientLoans;
     }*/
+//-----nueva propiedad
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
 }
