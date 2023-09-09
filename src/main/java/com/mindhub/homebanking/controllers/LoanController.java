@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -39,7 +40,7 @@ public class LoanController {
                 return loanRepository.findAll().stream().map(loan -> new LoanDTO(loan)).collect(Collectors.toList());
 
     }
-
+@Transactional
     @RequestMapping(path = "/loans", method = RequestMethod.POST)
 
         public ResponseEntity<Object> createLoans(@RequestBody LoanApplicationDTO loanApplicationDTO,Authentication authentication) {
@@ -54,14 +55,8 @@ public class LoanController {
         System.out.println(loanApplicationDTO.getPayments());
         System.out.println(loanApplicationDTO.getAccountToNumber());
 
-        //Utilizo nombre
-        Loan typeLoan = loanRepository.findNameById(loanApplicationDTO.getLoanId());
-        System.out.println(typeLoan.getName());
-
-
 
         //Verificar que los parámetros no estén vacíos
-
 
         Loan loanN=loanRepository.findById(loanApplicationDTO.getLoanId()).orElse(null);
 
@@ -69,25 +64,25 @@ public class LoanController {
             return new ResponseEntity<>("Por favor completar todos los campos", HttpStatus.FORBIDDEN);
         }
 
-
         //Verificar que el prestamo exista
 
-        if (!loanRepository.existsById(typeLoan.getId())) {
+        if (!loanRepository.existsById(loanN.getId())) {
             return new ResponseEntity<>("El tipo de prestamo no existe", HttpStatus.FORBIDDEN);
        }
         //Verificar que el monto solicitado no exceda el monto máximo del préstamo
 
-        if (!(((loanRepository.findByName(typeLoan.getName())).getMaxAmount()) >= loanApplicationDTO.getAmount())) {
+        if (!(loanN.getMaxAmount()>=loanApplicationDTO.getAmount())){
             return new ResponseEntity<>("Debe ingresar un monto valido", HttpStatus.FORBIDDEN);
         }
 
         //Verifica que la cantidad de cuotas se encuentre entre las disponibles del préstamo
 
-        if (!((loanRepository.findByName(typeLoan.getName()).getPayments()).contains(loanApplicationDTO.getPayments()))){
+        if(!(loanN.getPayments().contains(loanApplicationDTO.getPayments()))){
             return new ResponseEntity<>("La cuota ingresada no está disponible", HttpStatus.FORBIDDEN);
         }
 
         // Verificar que la cuenta de destino exista
+
 
         if((accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()) == null)){
 
@@ -143,6 +138,7 @@ public class LoanController {
         (accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).setBalance((accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).getBalance() + transactionNew.getAmount());
 
         accountRepository.save(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()));
+
         System.out.println(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()).getBalance());
         System.out.println(accountRepository.findByNumber("VIN001").getBalance());
 

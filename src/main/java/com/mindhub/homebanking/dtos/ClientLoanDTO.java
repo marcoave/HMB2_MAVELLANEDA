@@ -12,6 +12,7 @@ public class ClientLoanDTO {
      private Long loanid;
     //private Long client_id;
 
+    public ClientLoanDTO(){}
     public ClientLoanDTO(ClientLoan clientLoan) {
         this.id = clientLoan.getId();
         this.amount = clientLoan.getAmount();

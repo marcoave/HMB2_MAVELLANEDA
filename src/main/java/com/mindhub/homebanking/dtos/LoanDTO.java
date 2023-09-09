@@ -1,5 +1,6 @@
 package com.mindhub.homebanking.dtos;
 
+import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Loan;
 
 import javax.persistence.ElementCollection;
@@ -12,15 +13,17 @@ public class LoanDTO {
     private String name;
     private Double maxAmount;
 
-    //@ElementCollection
+
 
     private List<Integer> payments;
 
+    public LoanDTO(){}
     public LoanDTO (Loan loan){
        id= loan.getId();
        name= loan.getName();
        maxAmount= loan.getMaxAmount();
        payments=loan.getPayments();
+
 
    }
 

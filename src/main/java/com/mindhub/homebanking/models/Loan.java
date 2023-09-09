@@ -44,12 +44,6 @@ public class Loan {
         this.payments = payments;
         this.amount=amount;
     }
-    /*public Loan(Long id, String name, Double maxAmount, List<Integer> payments) {
-        this.id = id;
-        this.name = name;
-        this.maxAmount = maxAmount;
-        this.payments = payments;
-    }*/
 
     //Métodos
 //@JsonIgnore

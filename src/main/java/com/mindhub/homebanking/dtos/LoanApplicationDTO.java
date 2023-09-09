@@ -1,17 +1,10 @@
 package com.mindhub.homebanking.dtos;
 
-import com.mindhub.homebanking.models.Account;
-import com.mindhub.homebanking.models.Loan;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 
 public class LoanApplicationDTO {
 
 
-    private Long loanId;
+    private long loanId;
 
     private String loanType;
     private Double amount;
@@ -23,7 +16,7 @@ public class LoanApplicationDTO {
    public LoanApplicationDTO (){
 
    }
-    public LoanApplicationDTO (Long loanId, Double amount, Integer payments, String accountToNumber){
+    public LoanApplicationDTO (long loanId, Double amount, Integer payments, String accountToNumber){
        this.loanId= loanId;
         this.amount= amount;
         this.payments=payments;
