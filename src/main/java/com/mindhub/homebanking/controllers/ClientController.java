@@ -5,6 +5,7 @@ import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.ClientService;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,15 +28,19 @@ public class ClientController {
 
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private ClientService clientService;
 
     @RequestMapping("/clients")
     public List<ClientDTO> getClients() {
 
-        return clientRepository.findAll().stream().map(client -> new ClientDTO(client)).collect(Collectors.toList());
+        return clientService.getClientsDTO();
+        //return clientRepository.findAll().stream().map(client -> new ClientDTO(client)).collect(Collectors.toList());
     }
 
     @RequestMapping("/clients/{id}")
     public ClientDTO getClient(@PathVariable Long id) {
+
         return new ClientDTO(clientRepository.findById(id).orElse(null));
     }
 //---
@@ -46,14 +51,17 @@ public class ClientController {
             @RequestParam String firstName, @RequestParam String lastName, @RequestParam String email,
             @RequestParam String password) {
         if (firstName.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank()) {
-            return new ResponseEntity<>("Missing Data", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("Verificar datos a ingresar", HttpStatus.FORBIDDEN);
         }
 
 
         if (clientRepository.findByEmail(email) != null) {
             return new ResponseEntity<>("Name already in use", HttpStatus.FORBIDDEN);
         }
-        Client client1=clientRepository.save(new Client(firstName, lastName, email, passwordEncoder.encode(password)));
+        Client client1=new Client(firstName, lastName, email, passwordEncoder.encode(password));
+        clientService.saveClient(client1);
+
+        //Client client1=clientRepository.save(new Client(firstName, lastName, email, passwordEncoder.encode(password)));
 
 
         //Client newClient= new Client();
@@ -75,7 +83,7 @@ public class ClientController {
 
 
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>("Estás Registrado",HttpStatus.CREATED);
     }
 
 @RequestMapping("/clients/current")

@@ -6,6 +6,7 @@ import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,12 +27,15 @@ public class AccountController {
     private ClientDTO clientDTO;
     @Autowired
     private ClientRepository clientRepository;
+    @Autowired
+    private AccountService accountService;
 
     @RequestMapping("/accounts")
 
-    public List<AccountDTO> getAccountDTO() {
+    public List<AccountDTO> getAccount() {
 
-        return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
+        return accountService.getAccountsDTO();
+        //return accountRepository.findAll().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
     }
 
     @RequestMapping("/accounts/{id}")
