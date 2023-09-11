@@ -7,6 +7,7 @@ import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
 import com.mindhub.homebanking.services.AccountService;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,8 @@ public class AccountController {
     private ClientRepository clientRepository;
     @Autowired
     private AccountService accountService;
+    @Autowired
+    private ClientService clientService;
 
     @RequestMapping("/accounts")
 
@@ -40,15 +43,17 @@ public class AccountController {
 
     @RequestMapping("/accounts/{id}")
     public AccountDTO getAccount(@PathVariable Long id) {
-        return new AccountDTO(accountRepository.findById(id).orElse(null));
+        return new AccountDTO(accountService.findById(id));
         //return new AccountDTO(accountRepository.findById(id).orElse(null));
     }
 
     @RequestMapping("/clients/current/accounts")
 
        public List<AccountDTO> getAccountDTO(Authentication authentication) {
-        Client clientDTO = clientRepository.findByEmail(authentication.getName());
-        return clientDTO.getAccounts().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
+        Client clientDTO = clientService.findByEmail(authentication.getName());
+        //Client clientDTO = clientRepository.findByEmail(authentication.getName());
+        return accountService.getAccountCurrentDTO(clientDTO);
+        //return clientDTO.getAccounts().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
 
 
 
@@ -61,7 +66,8 @@ public class AccountController {
         if (authentication == null) {
             return new ResponseEntity<>("No va", HttpStatus.FORBIDDEN);
         }
-            Client clientDTO = clientRepository.findByEmail(authentication.getName());
+            Client clientDTO = clientService.findByEmail(authentication.getName());
+            //Client clientDTO = clientRepository.findByEmail(authentication.getName());
 
             if (clientDTO.getAccounts().size() >= 3) {
                 return new ResponseEntity<>("Máximo tres cuentas", HttpStatus.FORBIDDEN);
@@ -70,7 +76,9 @@ public class AccountController {
             String accountNumber = generateAccountNumber();
 
             //Verificar que no exista el numero de cuenta
-            if (accountRepository.findByNumber(accountNumber)!=null) {
+
+            if (accountService.findByNumber(accountNumber)!=null) {
+            //if (accountRepository.findByNumber(accountNumber)!=null) {
             return new ResponseEntity<>("Numero de cuenta existente", HttpStatus.FORBIDDEN);
             }
 
@@ -86,7 +94,9 @@ public class AccountController {
             System.out.println(newAccount);
 
             // Guardar la cuenta en el repositorio
-            accountRepository.save(newAccount);
+
+            accountService.saveAccount(newAccount);
+            //accountRepository.save(newAccount);
 
             System.out.println(newAccount);
             return new ResponseEntity<>(HttpStatus.CREATED);

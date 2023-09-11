@@ -12,6 +12,8 @@ public interface ClientService {
 
     void saveClient(Client client);
 
+    Client findById (Long id);
 
+    Client findByEmail (String email);
 
 }

@@ -5,6 +5,7 @@ import com.mindhub.homebanking.models.Account;
 import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.AccountService;
 import com.mindhub.homebanking.services.ClientService;
 import org.hibernate.transform.AliasedTupleSubsetResultTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,9 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
+    @Autowired
+    private AccountService accountService;
+
     @RequestMapping("/clients")
     public List<ClientDTO> getClients() {
 
@@ -40,8 +44,9 @@ public class ClientController {
 
     @RequestMapping("/clients/{id}")
     public ClientDTO getClient(@PathVariable Long id) {
+        return new ClientDTO(clientService.findById(id));
+        //return new ClientDTO(clientRepository.findById(id).orElse(null));
 
-        return new ClientDTO(clientRepository.findById(id).orElse(null));
     }
 //---
 
@@ -54,8 +59,8 @@ public class ClientController {
             return new ResponseEntity<>("Verificar datos a ingresar", HttpStatus.FORBIDDEN);
         }
 
-
-        if (clientRepository.findByEmail(email) != null) {
+        if (clientService.findByEmail(email) != null) {
+        //if (clientRepository.findByEmail(email) != null) {
             return new ResponseEntity<>("Name already in use", HttpStatus.FORBIDDEN);
         }
         Client client1=new Client(firstName, lastName, email, passwordEncoder.encode(password));
@@ -76,8 +81,11 @@ public class ClientController {
         client1.addAccount(newAccount);
         System.out.println(newAccount);
 
+
      // Guardar la cuenta en el repositorio
-        accountRepository.save(newAccount);
+        accountService.saveAccount(newAccount);
+
+        //accountRepository.save(newAccount);
 
         System.out.println(newAccount);
 
@@ -89,8 +97,10 @@ public class ClientController {
 @RequestMapping("/clients/current")
 
     public ClientDTO getClient(Authentication authentication){
-        return new ClientDTO(clientRepository.findByEmail(authentication.getName()));
-}
+
+        return new ClientDTO(clientService.findByEmail(authentication.getName()));
+        //return new ClientDTO(clientRepository.findByEmail(authentication.getName()));
+    }
 
 
     private String generateAccountNumber(){

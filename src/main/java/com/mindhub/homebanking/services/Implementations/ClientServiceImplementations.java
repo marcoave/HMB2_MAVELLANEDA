@@ -28,5 +28,15 @@ public class ClientServiceImplementations implements ClientService {
     clientRepository.save(client);
     }
 
+    @Override
+    public Client findById(Long id) {
+        return clientRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Client findByEmail(String email) {
+        return clientRepository.findByEmail(email);
+    }
+
 
 }
