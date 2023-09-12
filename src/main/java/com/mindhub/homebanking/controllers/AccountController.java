@@ -50,9 +50,9 @@ public class AccountController {
     @RequestMapping("/clients/current/accounts")
 
        public List<AccountDTO> getAccountDTO(Authentication authentication) {
-        Client clientDTO = clientService.findByEmail(authentication.getName());
+        Client clientA = clientService.findByEmail(authentication.getName());
         //Client clientDTO = clientRepository.findByEmail(authentication.getName());
-        return accountService.getAccountCurrentDTO(clientDTO);
+        return accountService.getAccountCurrentDTO(clientA);
         //return clientDTO.getAccounts().stream().map(account -> new AccountDTO(account)).collect(Collectors.toList());
 
 
@@ -66,10 +66,10 @@ public class AccountController {
         if (authentication == null) {
             return new ResponseEntity<>("No va", HttpStatus.FORBIDDEN);
         }
-            Client clientDTO = clientService.findByEmail(authentication.getName());
+            Client clientA = clientService.findByEmail(authentication.getName());
             //Client clientDTO = clientRepository.findByEmail(authentication.getName());
 
-            if (clientDTO.getAccounts().size() >= 3) {
+            if (clientA.getAccounts().size() >= 3) {
                 return new ResponseEntity<>("Máximo tres cuentas", HttpStatus.FORBIDDEN);
             }
             // Generar un número de cuenta aleatorio
@@ -90,7 +90,7 @@ public class AccountController {
             newAccount.setBalance(0.0);
             newAccount.setCreationDate(LocalDate.now());
             //newAccount.setClient(client);
-            clientDTO.addAccount(newAccount);
+            clientA.addAccount(newAccount);
             System.out.println(newAccount);
 
             // Guardar la cuenta en el repositorio

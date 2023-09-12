@@ -55,13 +55,13 @@ public class LoanController {
     @RequestMapping(path = "/loans", method = RequestMethod.POST)
 
         public ResponseEntity<Object> createLoans(@RequestBody LoanApplicationDTO loanApplicationDTO,Authentication authentication) {
-        Client clientDTO=clientService.findByEmail(authentication.getName());
+        Client clientA=clientService.findByEmail(authentication.getName());
         //Client clientDTO = clientRepository.findByEmail(authentication.getName());
-        if (clientDTO == null) {
-            return new ResponseEntity<>("No va", HttpStatus.FORBIDDEN);
+        if (clientA == null) {
+            return new ResponseEntity<>("Intentar autenticación nuevamente", HttpStatus.FORBIDDEN);
         }
 
-        //Verificaciones
+        //Datos recibidos
         System.out.println(loanApplicationDTO.getLoanId());
         System.out.println(loanApplicationDTO.getAmount());
         System.out.println(loanApplicationDTO.getPayments());
@@ -73,6 +73,7 @@ public class LoanController {
         Loan loanN=loanService.findById(loanApplicationDTO.getLoanId());
         //Loan loanN=loanRepository.findById(loanApplicationDTO.getLoanId()).orElse(null);
 
+        //if ((loanN==null)||(loanApplicationDTO.getAmount()==null) ||(loanApplicationDTO.getPayments()==null)||loanApplicationDTO.getAccountToNumber().isBlank()) {
         if ((loanN==null)||(loanApplicationDTO.getAmount()==null) ||(loanApplicationDTO.getPayments()==null)||loanApplicationDTO.getAccountToNumber().isBlank()) {
             return new ResponseEntity<>("Por favor completar todos los campos", HttpStatus.FORBIDDEN);
         }
@@ -81,7 +82,8 @@ public class LoanController {
 
         //if (!loanRepository.existsById(loanN.getId())) {
 
-            if (!loanService.existsById(loanN.getId())) {
+            //if (!loanService.existsById(loanN.getId())) {
+                if ((loanN.getId())==null) {
             return new ResponseEntity<>("El tipo de prestamo no existe", HttpStatus.FORBIDDEN);
        }
         //Verificar que el monto solicitado no exceda el monto máximo del préstamo
@@ -99,15 +101,17 @@ public class LoanController {
         // Verificar que la cuenta de destino exista
 
         //if((accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()) == null)){
-        if((accountService.findByNumber(loanApplicationDTO.getAccountToNumber()) == null)){
-
+        Account accountToN=accountService.findByNumber(loanApplicationDTO.getAccountToNumber());
+        //if((accountService.findByNumber(loanApplicationDTO.getAccountToNumber()) == null)){
+        if((accountToN == null)){
             return new ResponseEntity<>("La cuenta ingresada no existe", HttpStatus.FORBIDDEN);
         }
 
         //Verificar que la cuenta de destino pertenezca al cliente autenticado
 
-        if (!clientDTO.getAccounts().contains(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()))){
-            return new ResponseEntity<>("La cuenta no pertenece al usuario autenticado", HttpStatus.FORBIDDEN);
+        //if (!clientA.getAccounts().contains(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()))){
+        if (!clientA.getAccounts().contains(accountToN)){
+            return new ResponseEntity<>("La cuenta no pertenece al usuario autenticado(La cuenta no te pertenece)", HttpStatus.FORBIDDEN);
 
         }
 
@@ -116,7 +120,7 @@ public class LoanController {
 
         //Crear
         ClientLoan clientLoanNew =new ClientLoan();
-        clientLoanNew.setClient(clientDTO);
+        clientLoanNew.setClient(clientA);
         clientLoanNew.setLoan(loanN);
         clientLoanNew.setAmount(((loanApplicationDTO.getAmount()))*1.2);
         clientLoanNew.setPayments(loanApplicationDTO.getPayments());
@@ -139,7 +143,8 @@ public class LoanController {
         //Agregar las transacciones
 
         //(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).addTransaction(transactionNew);
-        (accountService.findByNumber(loanApplicationDTO.getAccountToNumber())).addTransaction(transactionNew);
+        //(accountService.findByNumber(loanApplicationDTO.getAccountToNumber())).addTransaction(transactionNew);
+        (accountToN).addTransaction(transactionNew);
         System.out.println(accountService);
 
         //Guardar la transaction en la base de datos
@@ -152,10 +157,13 @@ public class LoanController {
         //Actualizar cuentas
 
         //(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).setBalance((accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).getBalance() + transactionNew.getAmount());
-        (accountService.findByNumber(loanApplicationDTO.getAccountToNumber())).setBalance((accountService.findByNumber(loanApplicationDTO.getAccountToNumber())).getBalance() + transactionNew.getAmount());
+        //(accountService.findByNumber(loanApplicationDTO.getAccountToNumber())).setBalance((accountService.findByNumber(loanApplicationDTO.getAccountToNumber())).getBalance() + transactionNew.getAmount());
+
+        (accountToN).setBalance((accountToN).getBalance() + transactionNew.getAmount());
 
         //accountRepository.save(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()));
-        accountService.saveAccount(accountService.findByNumber(loanApplicationDTO.getAccountToNumber()));
+        //accountService.saveAccount(accountService.findByNumber(loanApplicationDTO.getAccountToNumber()));
+        accountService.saveAccount(accountToN);
 
         System.out.println(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()).getBalance());
         System.out.println(accountRepository.findByNumber("VIN001").getBalance());

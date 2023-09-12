@@ -53,10 +53,10 @@ public class CardController {
     @RequestMapping(path = "/clients/current/cards", method = RequestMethod.POST)
 
     public ResponseEntity<Object> createCard(Authentication authentication, @RequestParam CardColor color, @RequestParam CardType type) {
-        Client clientDTO= clientService.findByEmail(authentication.getName());
+        Client clientA= clientService.findByEmail(authentication.getName());
         //Client clientDTO = clientRepository.findByEmail(authentication.getName());
 
-        int cardCount = cardService.countCardsByClientEmailAndType(clientDTO.getEmail(),type);
+        int cardCount = cardService.countCardsByClientEmailAndType(clientA.getEmail(),type);
         //int cardCount = cardRepository.countCardsByClientEmailAndType(clientDTO.getEmail(), type);
         System.out.println(cardCount);
 
@@ -81,7 +81,7 @@ public class CardController {
         Card cardN=new Card();
         cardN.setColor(color);
         cardN.setType(type);
-        cardN.setCardHolder(clientDTO.getFirstName()+" "+clientDTO.getLastName());
+        cardN.setCardHolder(clientA.getFirstName()+" "+clientA.getLastName());
         cardN.setFromDate(LocalDate.now());
         cardN.setThruDate(LocalDate.now().plusYears(5));
         cardN.setCvv(cvvNumber);
@@ -89,7 +89,7 @@ public class CardController {
 
         //Agregar la tarjeta al cliente
 
-        clientDTO.addCard(cardN);
+        clientA.addCard(cardN);
 
         //Guardar la tarjeta en la base de datos
 
