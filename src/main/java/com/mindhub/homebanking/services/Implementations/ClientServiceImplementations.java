@@ -30,6 +30,7 @@ public class ClientServiceImplementations implements ClientService {
 
     @Override
     public Client findById(Long id) {
+
         return clientRepository.findById(id).orElse(null);
     }
 

@@ -7,6 +7,7 @@ import com.mindhub.homebanking.dtos.LoanDTO;
 import com.mindhub.homebanking.models.*;
 import com.mindhub.homebanking.repositories.*;
 
+import com.mindhub.homebanking.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,28 +24,39 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 
 public class LoanController {
-    @Autowired
-    private LoanRepository loanRepository;
+    //@Autowired
+    //private LoanRepository loanRepository;
     @Autowired
     private AccountRepository accountRepository;
-    @Autowired
+    /*@Autowired
     private ClientLoanRepository clientLoanRepository;
     @Autowired
     private ClientRepository clientRepository;
     @Autowired
-    private TransactionRepository transactionRepository;
+    private TransactionRepository transactionRepository;*/
+    @Autowired
+    private LoanService loanService;
+    @Autowired
+    private AccountService accountService;
+    @Autowired
+    private ClientService clientService;
+    @Autowired
+    private ClientLoanService clientLoanService;
+    @Autowired
+    private TransactionsService transactionsService;
 
     @RequestMapping ("/loans")
     public List<LoanDTO> getLoans() {
-
-                return loanRepository.findAll().stream().map(loan -> new LoanDTO(loan)).collect(Collectors.toList());
+                return loanService.getLoansDTO();
+                //return loanRepository.findAll().stream().map(loan -> new LoanDTO(loan)).collect(Collectors.toList());
 
     }
 @Transactional
     @RequestMapping(path = "/loans", method = RequestMethod.POST)
 
         public ResponseEntity<Object> createLoans(@RequestBody LoanApplicationDTO loanApplicationDTO,Authentication authentication) {
-        Client clientDTO = clientRepository.findByEmail(authentication.getName());
+        Client clientDTO=clientService.findByEmail(authentication.getName());
+        //Client clientDTO = clientRepository.findByEmail(authentication.getName());
         if (clientDTO == null) {
             return new ResponseEntity<>("No va", HttpStatus.FORBIDDEN);
         }
@@ -58,7 +70,8 @@ public class LoanController {
 
         //Verificar que los parámetros no estén vacíos
 
-        Loan loanN=loanRepository.findById(loanApplicationDTO.getLoanId()).orElse(null);
+        Loan loanN=loanService.findById(loanApplicationDTO.getLoanId());
+        //Loan loanN=loanRepository.findById(loanApplicationDTO.getLoanId()).orElse(null);
 
         if ((loanN==null)||(loanApplicationDTO.getAmount()==null) ||(loanApplicationDTO.getPayments()==null)||loanApplicationDTO.getAccountToNumber().isBlank()) {
             return new ResponseEntity<>("Por favor completar todos los campos", HttpStatus.FORBIDDEN);
@@ -66,7 +79,9 @@ public class LoanController {
 
         //Verificar que el prestamo exista
 
-        if (!loanRepository.existsById(loanN.getId())) {
+        //if (!loanRepository.existsById(loanN.getId())) {
+
+            if (!loanService.existsById(loanN.getId())) {
             return new ResponseEntity<>("El tipo de prestamo no existe", HttpStatus.FORBIDDEN);
        }
         //Verificar que el monto solicitado no exceda el monto máximo del préstamo
@@ -83,8 +98,8 @@ public class LoanController {
 
         // Verificar que la cuenta de destino exista
 
-
-        if((accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()) == null)){
+        //if((accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()) == null)){
+        if((accountService.findByNumber(loanApplicationDTO.getAccountToNumber()) == null)){
 
             return new ResponseEntity<>("La cuenta ingresada no existe", HttpStatus.FORBIDDEN);
         }
@@ -108,8 +123,8 @@ public class LoanController {
 
         //Guardar prestamos
 
-        clientLoanRepository.save(clientLoanNew);
-
+        //clientLoanRepository.save(clientLoanNew);
+        clientLoanService.saveClientLoan(clientLoanNew);
 
         //Transaccion CREDIT
 
@@ -123,21 +138,24 @@ public class LoanController {
 
         //Agregar las transacciones
 
-        (accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).addTransaction(transactionNew);
-
-        System.out.println(accountRepository);
+        //(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).addTransaction(transactionNew);
+        (accountService.findByNumber(loanApplicationDTO.getAccountToNumber())).addTransaction(transactionNew);
+        System.out.println(accountService);
 
         //Guardar la transaction en la base de datos
 
-        transactionRepository.save(transactionNew);
+        //transactionRepository.save(transactionNew);
+        transactionsService.saveTransaction(transactionNew);
 
         System.out.println(transactionNew.getAmount());
 
         //Actualizar cuentas
 
-        (accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).setBalance((accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).getBalance() + transactionNew.getAmount());
+        //(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).setBalance((accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber())).getBalance() + transactionNew.getAmount());
+        (accountService.findByNumber(loanApplicationDTO.getAccountToNumber())).setBalance((accountService.findByNumber(loanApplicationDTO.getAccountToNumber())).getBalance() + transactionNew.getAmount());
 
-        accountRepository.save(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()));
+        //accountRepository.save(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()));
+        accountService.saveAccount(accountService.findByNumber(loanApplicationDTO.getAccountToNumber()));
 
         System.out.println(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()).getBalance());
         System.out.println(accountRepository.findByNumber("VIN001").getBalance());

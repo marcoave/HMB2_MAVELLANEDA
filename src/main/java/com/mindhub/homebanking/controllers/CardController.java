@@ -10,6 +10,8 @@ import com.mindhub.homebanking.models.Client;
 import com.mindhub.homebanking.repositories.AccountRepository;
 import com.mindhub.homebanking.repositories.CardRepository;
 import com.mindhub.homebanking.repositories.ClientRepository;
+import com.mindhub.homebanking.services.CardService;
+import com.mindhub.homebanking.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +28,16 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api")
 public class CardController {
-    @Autowired
-    private CardRepository cardRepository;
-    @Autowired
-    private ClientRepository clientRepository;
+   // @Autowired
+    //private CardRepository cardRepository;
 
+    @Autowired
+    private CardService cardService;
+   // @Autowired
+    //private ClientRepository clientRepository;
+
+    @Autowired
+    private ClientService clientService;
 
    private ClientDTO clientDTO;
 
@@ -39,15 +46,18 @@ public class CardController {
     //@RequestMapping(path = "/clients/current/cards", method = RequestMethod.GET)
     public List<CardDTO> getCards() {
 
-        return cardRepository.findAll().stream().map(card -> new CardDTO(card)).collect(Collectors.toList());
+        return cardService.getCardsDTO();
+        //return cardRepository.findAll().stream().map(card -> new CardDTO(card)).collect(Collectors.toList());
     }
 
     @RequestMapping(path = "/clients/current/cards", method = RequestMethod.POST)
 
     public ResponseEntity<Object> createCard(Authentication authentication, @RequestParam CardColor color, @RequestParam CardType type) {
-        Client clientDTO = clientRepository.findByEmail(authentication.getName());
+        Client clientDTO= clientService.findByEmail(authentication.getName());
+        //Client clientDTO = clientRepository.findByEmail(authentication.getName());
 
-        int cardCount = cardRepository.countCardsByClientEmailAndType(clientDTO.getEmail(), type);
+        int cardCount = cardService.countCardsByClientEmailAndType(clientDTO.getEmail(),type);
+        //int cardCount = cardRepository.countCardsByClientEmailAndType(clientDTO.getEmail(), type);
         System.out.println(cardCount);
 
         if (cardCount>=3) {
@@ -60,7 +70,9 @@ public class CardController {
         String chainNumber=generateChainNumber();
 
         //Verificar que no exista el numero de tarjeta
-        if (cardRepository.findByNumber(chainNumber)!=null) {
+
+        //if (cardRepository.findByNumber(chainNumber)!=null) {
+        if (cardService.findByNumber(chainNumber)!=null) {
             return new ResponseEntity<>("Numero de tarjeta existente", HttpStatus.FORBIDDEN);
         }
 
@@ -81,8 +93,8 @@ public class CardController {
 
         //Guardar la tarjeta en la base de datos
 
-        cardRepository.save(cardN);
-
+        //cardRepository.save(cardN);
+        cardService.saveCard(cardN);
         System.out.println(cardN);
 
 
