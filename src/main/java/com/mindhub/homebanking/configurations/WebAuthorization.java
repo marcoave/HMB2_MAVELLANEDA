@@ -37,7 +37,7 @@ public class WebAuthorization {
                                 .antMatchers(HttpMethod.GET,"/api/client/current/cards").hasAnyAuthority("ADMIN","CLIENT")
                                 .antMatchers(HttpMethod.GET,"/api/accounts/**").hasAnyAuthority("ADMIN", "CLIENT")
                                 .antMatchers(HttpMethod.GET,"/h2-console/{id}").hasAuthority("ADMIN")
-                                .antMatchers(HttpMethod.GET,"/api/loans").hasAnyAuthority("ADMIN","CLIENT")
+                                //.antMatchers(HttpMethod.GET,"/api/loans").hasAnyAuthority("ADMIN","CLIENT")
                                 .antMatchers(HttpMethod.GET,"/h2-console/**").hasAuthority("ADMIN")
                                 .antMatchers(HttpMethod.GET,"/rest/**").hasAnyAuthority("ADMIN");
 

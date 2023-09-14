@@ -1,6 +1,7 @@
 package com.mindhub.homebanking.controllers;
 
 
+import com.mindhub.homebanking.Utils.CardUtils;
 import com.mindhub.homebanking.dtos.CardDTO;
 import com.mindhub.homebanking.dtos.ClientDTO;
 import com.mindhub.homebanking.models.Card;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.mindhub.homebanking.Utils.CardUtils.getCardNumber;
 
 @RestController
 @RequestMapping("/api")
@@ -97,9 +100,18 @@ public class CardController {
         cardService.saveCard(cardN);
         System.out.println(cardN);
 
+       // getCardNumber();
+        String cardNumber= CardUtils.getCardNumber();
 
-              return new ResponseEntity<>(HttpStatus.CREATED);
+        //getCvvN();
+        int cvvN = CardUtils.getCvvN();
+
+        return new ResponseEntity<>(HttpStatus.CREATED);
   }
+
+
+
+
     public Integer generateCvvNumber(){
 
         return getRandomNumber(1,999);

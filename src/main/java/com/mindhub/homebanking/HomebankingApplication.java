@@ -1,5 +1,6 @@
 package com.mindhub.homebanking;
 
+import com.mindhub.homebanking.dtos.LoanDTO;
 import com.mindhub.homebanking.models.*;
 import com.mindhub.homebanking.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 public class HomebankingApplication {
@@ -123,6 +125,8 @@ public class HomebankingApplication {
 			loanRepository.save(Loan2);
 			loanRepository.save(Loan3);
 
+			System.out.println(loanRepository.existsById(9L));
+
 			//Crear
 			ClientLoan ClientLoan1=new ClientLoan();
 			ClientLoan1.setClient(client);
@@ -195,6 +199,9 @@ public class HomebankingApplication {
 			cardRepository.save(card1);
 			cardRepository.save(card2);
 			cardRepository.save(card3);
+
+			//List<Loan>loans=loanRepository.findAll();
+			//System.out.println(loans);
 
 		};
 	}

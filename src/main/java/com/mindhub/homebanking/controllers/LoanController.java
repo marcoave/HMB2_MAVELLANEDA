@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 
 public class LoanController {
-    //@Autowired
-    //private LoanRepository loanRepository;
+    @Autowired
+    private LoanRepository loanRepository;
     @Autowired
     private AccountRepository accountRepository;
     /*@Autowired
@@ -45,12 +45,16 @@ public class LoanController {
     @Autowired
     private TransactionsService transactionsService;
 
+
     @RequestMapping ("/loans")
     public List<LoanDTO> getLoans() {
                 return loanService.getLoansDTO();
+
                 //return loanRepository.findAll().stream().map(loan -> new LoanDTO(loan)).collect(Collectors.toList());
 
+
     }
+
 @Transactional
     @RequestMapping(path = "/loans", method = RequestMethod.POST)
 
@@ -165,7 +169,8 @@ public class LoanController {
         //accountService.saveAccount(accountService.findByNumber(loanApplicationDTO.getAccountToNumber()));
         accountService.saveAccount(accountToN);
 
-        System.out.println(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()).getBalance());
+
+    System.out.println(accountRepository.findByNumber(loanApplicationDTO.getAccountToNumber()).getBalance());
         System.out.println(accountRepository.findByNumber("VIN001").getBalance());
 
         return new ResponseEntity<>(HttpStatus.CREATED);
